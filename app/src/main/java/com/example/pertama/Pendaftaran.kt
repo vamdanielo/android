@@ -50,10 +50,6 @@ class Pendaftaran : AppCompatActivity() {
             submitForm()
         }
 
-        btnBatal.setOnClickListener {
-            clearFields()
-            Toast.makeText(this, "Form dibersihkan", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun submitForm() {

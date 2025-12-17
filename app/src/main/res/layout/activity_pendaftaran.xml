@@ -109,7 +109,7 @@
         android:id="@+id/btnKirim"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#40FF00"
+        android:backgroundTint="#2F70BC"
         android:text="Kirim"
         android:textColor="#000000" />
 
