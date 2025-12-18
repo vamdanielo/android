@@ -8,11 +8,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration // Pastikan ini diimport
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -25,6 +31,7 @@ class OsmMapFragment : Fragment() {
     private lateinit var map: MapView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var myLocationOverlay: MyLocationNewOverlay
+    private lateinit var db: AbsenDatabase
 
     // Gunakan constant yang lebih mudah diakses
     private val LOCATION_PERMISSION_REQUEST_CODE = 101
@@ -35,6 +42,9 @@ class OsmMapFragment : Fragment() {
         arguments?.let {
             // ... (Kode parameter tetap) ...
         }
+
+        db = AbsenDatabase.getDatabase(requireContext())
+
 
         // 1. Inisialisasi Fused Location Client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -71,6 +81,13 @@ class OsmMapFragment : Fragment() {
 
         // Panggil fungsi untuk mengaktifkan lokasi dan memusatkan peta
         setupMapAndLocation()
+
+        val btnabsen = view.findViewById<Button>(R.id.btnabsen)
+
+        btnabsen.setOnClickListener {
+            prosesAbsen()
+
+        }
     }
 
     // --- Metode Penanganan Izin ---
@@ -154,6 +171,50 @@ class OsmMapFragment : Fragment() {
         super.onPause()
         map.onPause()
         // myLocationOverlay.disableMyLocation() // Matikan untuk menghemat baterai
+    }
+
+    private fun prosesAbsen() {
+
+        val activity = requireActivity() as Dashboard
+        var id= activity.id
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Toast.makeText(requireContext(), "Izin Lokasi Belum Diberikan", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                // 3. Simpan ke Database menggunakan viewLifecycleOwner.lifecycleScope
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    val attendace = AttendanceEntity(
+                        userId = id,
+                        checkInTime = System.currentTimeMillis(),
+                        latitude = location.latitude,
+                        longitude = location.longitude
+                    )
+
+                    val resultId = db.attendanceDao().insertAttendance(attendace)
+
+                    withContext(Dispatchers.Main) {
+                        if (resultId > 0) {
+                            Toast.makeText(requireContext(), "Check-in Berhasil", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                }
+            } else {
+                Toast.makeText(requireContext(), "Gagal Mendapatkan Lokasi.", Toast.LENGTH_LONG).show()
+            }
+        }.addOnFailureListener { e ->
+            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+
+
     }
 
     // ... (Companion object dan TODO lainnya) ...

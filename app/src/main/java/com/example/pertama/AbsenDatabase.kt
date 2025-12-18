@@ -6,20 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
+import com.example.myapplication.MIGRATION_2_3
 
-@Database(entities = [UserEntity::class], version = 2, exportSchema = false)
+@Database(entities = [UserEntity::class,
+        AttendanceEntity::class], version = 3, exportSchema = false)
 abstract class AbsenDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun attendanceDao(): AttendanceDao
 
     companion object {
         @Volatile
         private var INSTANCE: AbsenDatabase? = null
 
-        val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // TODO: tulis perubahan tabel di sini
-            }
-        }
+
 
         fun getDatabase(context: Context): AbsenDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -27,7 +26,7 @@ abstract class AbsenDatabase : RoomDatabase() {
                     context.applicationContext,
                     AbsenDatabase::class.java,
                     "aplikasiabsen"
-                ).addMigrations(MIGRATION_1_2)
+                ).addMigrations(MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 instance

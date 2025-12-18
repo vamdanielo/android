@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 
 class Dashboard : AppCompatActivity() {
     private lateinit var userDao : UserDao
+    public var id: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +25,7 @@ class Dashboard : AppCompatActivity() {
         val db = AbsenDatabase.getDatabase(this)
         userDao = db.userDao()
 
-        val id = intent.getIntExtra("ID",0)
+        id = intent.getIntExtra("ID",0)
 
 
         val tvNamaDepan = findViewById<TextView>(R.id.TvNamaDepan)
@@ -42,6 +43,7 @@ class Dashboard : AppCompatActivity() {
                 tvEmail.text = (user?.email)
             }
         }
+
 
 
 
