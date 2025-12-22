@@ -7,9 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
 import com.example.myapplication.MIGRATION_2_3
+import com.example.myapplication.MIGRATION_3_4
 
 @Database(entities = [UserEntity::class,
-        AttendanceEntity::class], version = 3, exportSchema = false)
+        AttendanceEntity::class], version = 4, exportSchema = false)
 abstract class AbsenDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun attendanceDao(): AttendanceDao
@@ -26,7 +27,11 @@ abstract class AbsenDatabase : RoomDatabase() {
                     context.applicationContext,
                     AbsenDatabase::class.java,
                     "aplikasiabsen"
-                ).addMigrations(MIGRATION_2_3)
+                ).addMigrations(
+                    MIGRATION_2_3,
+                    MIGRATION_3_4
+                )
+
                     .build()
                 INSTANCE = instance
                 instance

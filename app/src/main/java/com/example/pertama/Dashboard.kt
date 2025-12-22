@@ -32,6 +32,8 @@ class Dashboard : AppCompatActivity() {
         val tvNamaBelakang = findViewById<TextView>(R.id.tvNamaBelakang)
         val tvUsername = findViewById<TextView>(R.id.username)
         val tvEmail = findViewById<TextView>(R.id.email)
+        val tvAlamat = findViewById<TextView>(R.id.textView9)
+
 
         lifecycleScope.launch(Dispatchers.IO) {
         val user = userDao.getUserById(id)
@@ -41,6 +43,7 @@ class Dashboard : AppCompatActivity() {
                 tvNamaBelakang.text = (user?.namaBelakang)
                 tvUsername.text = (user?.username)
                 tvEmail.text = (user?.email)
+                tvAlamat.text = (user?.alamat)
             }
         }
 

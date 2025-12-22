@@ -16,7 +16,8 @@ data class UserEntity (
     val namaBelakang: String,
     val username : String,
     val email : String,
-    val password : String
+    val password : String,
+    val alamat : String
 
 
 )
